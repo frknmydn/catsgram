@@ -16,6 +16,11 @@ import { UserService } from '../service/user.service';
             throw(error);
         }
     }
+
+    static async getAllUsers(req:Request, res:Response, next:NextFunction){
+        const users = await UserService.getAllUsers();
+        res.send(users)
+    }
 }
 
 export default UserController;

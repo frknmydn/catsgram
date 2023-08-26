@@ -1,0 +1,43 @@
+http:
+  port: 8080
+admin:
+  port: 9876
+  host: localhost
+apiEndpoints:
+  api:
+    host: localhost
+    paths: '/api/profile/getallusers'
+  createprofile:
+    host: localhost
+    paths: '/api/profiles/createprofile'
+  register:
+    host: localhost
+    paths: '/api/users/register'
+serviceEndpoints:
+  httpbin:
+    url: 'http://localhost:3001'
+  authentication:
+    url: 'http://localhost:3000'
+policies:
+  - proxy
+
+pipelines:
+  default:
+    apiEndpoints:
+      - api
+      - createprofile
+    policies:
+      #- key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: httpbin 
+              changeOrigin: true
+  authenticationTest:
+    apiEndpoints:
+      - register
+    policies:
+      - proxy:
+          - action:
+              serviceEndpoint: authentication
+              changeOrigin: true
+

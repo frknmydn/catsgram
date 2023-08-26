@@ -22,5 +22,17 @@ export class UserService {
                 throw error
             }
         }
+
+
+    static async getAllUsers(): Promise<user[]>{
+        
+            try {
+                const users = await AppDataSource.manager.find(user); // Tüm kullanıcıları veritabanından alın
+                return users;
+            } catch (error) {
+                throw error;
+            }
+        
+    }
 }
 
