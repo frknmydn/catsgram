@@ -12,7 +12,7 @@ apiEndpoints:
     paths: '/api/profiles/createprofile'
   register:
     host: localhost
-    paths: '/api/users/register'
+    paths: '/api/users/*'
 serviceEndpoints:
   httpbin:
     url: 'http://localhost:3001'

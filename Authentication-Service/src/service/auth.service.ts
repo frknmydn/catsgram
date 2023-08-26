@@ -5,9 +5,9 @@ import Session from "../models/Session";
 
 
 class UserService {
-    static async createUser(username: string, password: string, userType: UserType) {
+    static async createUser(email: string, password: string, userType: UserType) {
         try {
-            const user = new User({ username, password, userType });
+            const user = new User({ email, password, userType });
             await user.save();
             return user;
         } catch (error) {
@@ -15,14 +15,14 @@ class UserService {
         }
     }
 
-    static async login(username: string, password: string): Promise<string | any> {
+    static async login(email: string, password: string): Promise<string | any> {
         try {
-            const user = await User.findOne({ username });
+            const user = await User.findOne({ email });
             if (user && await bcrypt.compare(password, user.password)) {
-                const token = jwt.sign({ username: user.username, userType: user.userType }, 'veryberrysecretanahtar', { expiresIn: '1h' });
+                const token = jwt.sign({ email: user.email, userType: user.userType }, 'veryberrysecretanahtar', { expiresIn: '1h' });
 
                 const session = new Session({
-                    username: user.username,
+                    email: user.email,
                     userType: user.userType,
                     token,
                     expiresAt: new Date(Date.now() + 3600000) // 1 saat 
@@ -37,15 +37,15 @@ class UserService {
         }
     }
 
-    static async getUserByUsername(username:string) : Promise<string | any>{
-        const user = await User.findOne({ username });
+    static async getUserByEmail(email:string) : Promise<string | any>{
+        const user = await User.findOne({ email });
         return user;
     }
 
-    static async updateUserPassword(username: string, newPassword: string) {
+    static async updateUserPassword(email: string, newPassword: string) {
         try {
             const updatedUser = await User.findOneAndUpdate(
-                { username: username },
+                { email: email },
                 { password: newPassword },
                 { new: true } // Bu seçenek, güncellenmiş kullanıcı belgesini döndürür
             );
@@ -58,9 +58,9 @@ class UserService {
         }
     }
 
-    static async deleteUser(username: string) {
+    static async deleteUser(email: string) {
         try {
-            const deletedUser = await User.findOneAndDelete({ username });
+            const deletedUser = await User.findOneAndDelete({ email });
             if (!deletedUser) {
                 throw new Error('Kullanıcı bulunamadı veya silinemedi.');
             }
@@ -69,13 +69,13 @@ class UserService {
         }
     }
 
-    static async sendUsernameByToken(jwtToken: string){
+    static async sendEmailByToken(jwtToken: string){
         try {
             // Token'i doğrula
-            const decodedToken = jwt.verify(jwtToken, 'veryberrysecretanahtar') as { username: string, userType: string };
+            const decodedToken = jwt.verify(jwtToken, 'veryberrysecretanahtar') as { email: string, userType: string };
 
             // Kullanıcı adını döndür
-            return decodedToken.username;
+            return decodedToken.email;
         } catch (error) {
             // Token geçerli değilse veya başka bir hata oluştuysa null döndür
             return null;

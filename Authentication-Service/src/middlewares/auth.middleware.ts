@@ -4,12 +4,12 @@ import { UserType } from '../models/User';
 
 declare module 'express-serve-static-core' {
     interface Request {
-        username?: string;
+        email?: string;
         userType?: UserType;
     }
 }
 
-export const authenticateToken = (req: Request & { username?: string, userType?: UserType }, res: Response, next: NextFunction) => {
+export const authenticateToken = (req: Request & { email?: string, userType?: UserType }, res: Response, next: NextFunction) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
     
@@ -18,9 +18,9 @@ export const authenticateToken = (req: Request & { username?: string, userType?:
     }
 
     try {
-        const verifiedToken = jwt.verify(token, 'veryberrysecretanahtar') as { username: string, userType: UserType };
+        const verifiedToken = jwt.verify(token, 'veryberrysecretanahtar') as { email: string, userType: UserType };
         
-        req.username = verifiedToken.username;
+        req.email = verifiedToken.email;
         req.userType = verifiedToken.userType;  
         
         next();
@@ -29,9 +29,9 @@ export const authenticateToken = (req: Request & { username?: string, userType?:
     }
 };
 
-export const verifyToken = (token: string): { username: string, userType: UserType } | null => {
+export const verifyToken = (token: string): { email: string, userType: UserType } | null => {
     try {
-        const verifiedToken = jwt.verify(token, 'veryberrysecretanahtar') as { username: string, userType: UserType };
+        const verifiedToken = jwt.verify(token, 'veryberrysecretanahtar') as { email: string, userType: UserType };
         return verifiedToken;
     } catch (error) {
         return null;

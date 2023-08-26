@@ -6,18 +6,18 @@ import { authenticateToken, verifyToken } from '../middlewares/auth.middleware';
 class UserController {
     static async register(req: Request, res: Response) {
         try {
-            const { username, password, userType } = req.body;
-            const newUser = await AuthService.createUser(username, password, userType);
+            const { email, password, userType } = req.body;
+            const newUser = await AuthService.createUser(email, password, userType);
             res.status(201).json(newUser);
-        } catch (error) {
-            res.status(500).json({ error: 'kullanici kayit edilemedi' });
+        } catch (error:any) {
+            res.status(500).json({ error: 'kullanici kayit edilemedi', message: error.message });
         }
     }
 
     static async login(req: Request, res: Response) {
         try {
-            const { username, password } = req.body;
-            const token = await AuthService.login(username, password);
+            const { email, password } = req.body;
+            const token = await AuthService.login(email, password);
             if (token) {
                 res.status(200).json({ token });
             } else {
@@ -43,13 +43,13 @@ class UserController {
                 return res.status(403).json({ error: 'Invalid token.' });
             }
 
-            if (!verifiedToken.username) {
+            if (!verifiedToken.email) {
                 return res.status(400).json({ error: 'Kullanıcı adı bulunamadı.' });
             }
 
             const { currentPassword, newPassword } = req.body;
-            const username = verifiedToken.username; 
-            const user = await AuthService.getUserByUsername(username);
+            const email = verifiedToken.email; 
+            const user = await AuthService.getUserByEmail(email);
 
             if (!user) {
                 return res.status(404).json({ error: 'Kullanıcı bulunamadı.' });
@@ -60,7 +60,7 @@ class UserController {
             }
             
             const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-            await AuthService.updateUserPassword(username, hashedNewPassword);
+            await AuthService.updateUserPassword(email, hashedNewPassword);
 
             return res.status(200).json({ message: 'Parola başarıyla güncellendi.' });
 
@@ -73,7 +73,7 @@ class UserController {
 
     static async deleteUser(req:Request, res:Response){
         try{
-            const {username} = req.params;
+            const {email} = req.params;
             const authHeader = req.headers['authorization'];
             const token = authHeader && authHeader.split(' ')[1];
 
@@ -81,7 +81,7 @@ class UserController {
                 return res.send('token bulunamadi');
             }
             
-            console.log(username);
+            console.log(email);
 
             const verifiedToken = verifyToken(token);
 
@@ -90,10 +90,10 @@ class UserController {
             }
 
              // Kullanıcının kendisi veya admin token'i ile silme yetkisi kontrolü
-             if (verifiedToken.username !== username && verifiedToken.userType !== 'admin') {
+             if (verifiedToken.email !== email && verifiedToken.userType !== 'admin') {
                 return res.status(403).json({ error: 'Bu işlemi gerçekleştirmek için yetkiniz bulunmuyor.' });
             }
-            await AuthService.deleteUser(username);
+            await AuthService.deleteUser(email);
             res.status(200).json({ message: 'Kullanıcı başarıyla silindi.' });
             } catch (error) {
                 res.status(500).json({ error: 'Kullanıcı silinirken bir hata oluştu.' });
@@ -102,7 +102,7 @@ class UserController {
             
         }
 
-        static async getUsernameFromTokenEndpoint(req: Request, res: Response) {
+        static async getEmailFromTokenEndpoint(req: Request, res: Response) {
             try {
                 const authHeader = req.headers['authorization'];
                 const token = authHeader && authHeader.split(' ')[1];
@@ -111,10 +111,10 @@ class UserController {
                     return res.status(401).json({ error: 'Token bulunamadı.' });
                 }
     
-                const username = await AuthService.sendUsernameByToken(token);
+                const email = await AuthService.sendEmailByToken(token);
     
-                if (username) {
-                    res.status(200).json({ username });
+                if (email) {
+                    res.status(200).json({ email });
                 } else {
                     res.status(403).json({ error: 'Geçersiz token veya token bulunamadı.' });
                 }

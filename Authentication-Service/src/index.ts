@@ -54,7 +54,7 @@ const rabbitmqService = new RabbitMQService(amqpUrl);
                    
                     const token = messageData.token;
                     if(token){
-                        const username = await AuthService.sendUsernameByToken(token);
+                        const username = await AuthService.sendEmailByToken(token);
                         const messageToSend = {
                             messageType: 'tip2',
                             username: username

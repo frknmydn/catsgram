@@ -1,6 +1,6 @@
 import express from 'express'
 import UserController from '../controller/user.controller';
-
+import { checkUserType } from '../middleware/currentUser';
 const router = express.Router();
 
 router.post(
@@ -8,7 +8,7 @@ router.post(
     UserController.createUser);
 
 router.get(
-    "/getallusers",
+    "/getallusers",checkUserType,
     UserController.getAllUsers
 )
 

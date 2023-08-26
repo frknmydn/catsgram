@@ -8,13 +8,13 @@ export enum UserType {
 }
 
 interface IUser extends Document {
-    username: string;
+    email: string;
     password: string;
     userType: UserType;
 }
 
 const UserSchema = new Schema<IUser>({
-    username: { type: String, unique: true, required: true },
+    email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
     userType: { type: String, enum: Object.values(UserType), default: UserType.Regular }
 });
