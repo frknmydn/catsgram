@@ -21,6 +21,20 @@ import { UserService } from '../service/user.service';
         const users = await UserService.getAllUsers();
         res.send(users)
     }
+
+    static async getUserByid(req: Request, res: Response){
+        const user = await UserService.getUserById(req.body.user_id);
+        res.send(user);
+    }
+    static async getUserByUsername(req:Request,res:Response){
+        const user = await UserService.getUserByUsername(req.body.username);
+        res.send(user);
+    }
+    static async getReportedUsers(req:Request, res:Response){
+        const users = await UserService.getUsersWithReportCount();
+        res.send(users);
+
+    }
 }
 
 export default UserController;

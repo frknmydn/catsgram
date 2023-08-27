@@ -1,3 +1,4 @@
+import { MoreThan } from 'typeorm';
 import {AppDataSource} from '../data-source'
 import { user } from '../entity/User.entity'
 
@@ -34,5 +35,46 @@ export class UserService {
             }
         
     }
+
+    static async getUserById(userId: number) {
+        try {
+            // Veritabanında belirli bir kullanıcıyı ID'ye göre al
+            const userRepository = AppDataSource.manager.getRepository(user);
+            const foundUser = await userRepository.findOneBy({
+                user_id:userId
+            })             
+
+            return foundUser;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async getUserByUsername(username: string){
+        try{
+            const userRepository = AppDataSource.manager.getRepository(user);
+            const foundUser = await userRepository.findOneBy({
+                username:username
+            })
+            return foundUser
+        }
+        catch(error){
+            throw error;
+        }
+    }
+
+    static async getUsersWithReportCount(): Promise<user[]> {
+        try {
+          const userRepository = AppDataSource.manager.getRepository(user);
+          const foundUsers = await userRepository.find({
+            where: {
+              report_count: MoreThan(0)
+            }
+          });
+          return foundUsers;
+        } catch (error) {
+          throw error;
+        }
+      }
 }
 

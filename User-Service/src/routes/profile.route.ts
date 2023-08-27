@@ -11,5 +11,18 @@ router.get(
     "/getallusers",checkUserType,
     UserController.getAllUsers
 )
+router.get(
+    "/getUserById/:id",
+    UserController.getUserByid
+)
+router.get(
+    "/getuserbyuseranme/:username",
+    UserController.getUserByUsername
+)
+
+router.get(
+    "/getReportedUsers",
+    UserController.getReportedUsers
+)
 
 export default router;

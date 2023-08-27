@@ -41,3 +41,28 @@ export function checkUserType(req: Request, res: Response, next: NextFunction) {
     return res.status(401).json({ message: 'Invalid token' });
   }
 }
+
+export function checkUserTypeForAdmin(req: Request, res: Response, next: NextFunction) {
+  const token = req.headers.authorization?.split(' ')[1]; // Token'ı al
+  console.log(token);
+  if (!token) {
+    return res.status(401).json({ message: 'Token not provided' });
+  }
+
+  try {
+    // Token'ı doğrula
+    const decoded = jwt.verify(token, secretKey) as { userType: UserType };
+    console.log(decoded);
+    if (decoded.userType === UserType.Admin) {
+      // Kullanıcı yetkilendirmesi başarılı, işlem yapabilirsiniz.
+      req.userType = decoded.userType; // Kullanıcı türünü middleware içinden erişilebilir hale getirin
+      return next();
+    } else {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+  } catch (error) {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+}
+
+
