@@ -1,7 +1,8 @@
 import { AppDataSource } from "./data-source"
-import { user } from "./entity/User.entity"
+import { users } from "./entity/User.entity"
 import express, { Request, Response } from 'express';
 import profileRoute from './routes/profile.route'
+import reportRoute from './routes/report.route'
 
 const app = express();
 const PORT = 3001;
@@ -16,7 +17,7 @@ AppDataSource.initialize().then(async () => {
 }).catch(error => console.log(error));
 
 app.use('/api/profile',profileRoute);
-
+app.use("/api/reports",reportRoute)
 
 app.get('/',(req:Request,res:Response) =>{
     res.send('express is working');

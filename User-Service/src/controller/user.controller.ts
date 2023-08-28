@@ -5,10 +5,10 @@ import { UserService } from '../service/user.service';
      static async createUser(req:Request, res:Response, next:NextFunction){
         try{
             const{username,full_name, birthdate, profile_picture_url,
-                 report_count, follower_count, following_count} = req.body;
+                 report_count, follower_count, following_count, isBanned} = req.body;
             
             const createUser = await UserService.createUser(username, full_name, birthdate,
-                profile_picture_url,report_count,follower_count,following_count);
+                profile_picture_url,report_count,follower_count,following_count, isBanned);
                 res.sendStatus(201);
                 
         }

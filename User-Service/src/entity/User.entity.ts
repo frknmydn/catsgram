@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class user {
+export class users {
   @PrimaryGeneratedColumn()
   user_id!: number;
 
@@ -25,4 +25,7 @@ export class user {
 
   @Column({ default: 0 })
     following_count!: number;
+
+    @Column({ default: false })
+    isBanned: boolean;
 }

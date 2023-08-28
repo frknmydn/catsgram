@@ -1,13 +1,13 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { user } from './User.entity';
+import { users } from './User.entity';
 
 @Entity()
 export class pets {
   @PrimaryGeneratedColumn()
   pet_id!: number;
 
-  @ManyToOne(() => user)
-  user!: user;
+  @ManyToOne(() => users)
+  user!: users;
 
   @Column()
   name!: string;

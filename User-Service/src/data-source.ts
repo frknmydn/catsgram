@@ -1,9 +1,10 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-import { user } from "./entity/User.entity"
+import { users } from "./entity/User.entity"
 import { blocked_users } from "./entity/BlockedUser.entity"
 import { followers } from "./entity/FollowerUser.entity"
 import { followings } from "./entity/FollowingUser.entity"
+import { profile_report } from "./entity/ProfileReport"
 import { pets } from "./entity/Pets.entity"
 
 export const AppDataSource = new DataSource({
@@ -15,7 +16,10 @@ export const AppDataSource = new DataSource({
     database: "ProfileDB",
     synchronize: true,
     logging: false,
-    entities: [user, blocked_users, followers, followings, pets],
-    migrations: [],
+    entities: [users, blocked_users, followers, followings, pets, profile_report],
+    migrations: ["src/migration/*.ts"],
     subscribers: [],
+    
+   
+    
 })

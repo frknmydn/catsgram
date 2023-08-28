@@ -1,12 +1,12 @@
 import { MoreThan } from 'typeorm';
 import {AppDataSource} from '../data-source'
-import { user } from '../entity/User.entity'
+import { users } from '../entity/User.entity'
 
 export class UserService {
 
     static async createUser (username:string,full_name:string, birthdate:Date, profile_picture_url:string, 
-        report_count:number, follower_count:number, following_count:number): Promise<user> {
-            const userToAdd = new user();
+        report_count:number, follower_count:number, following_count:number, isBanned: boolean): Promise<users> {
+            const userToAdd = new users();
             userToAdd.username= username;
             userToAdd.full_name = full_name;
             userToAdd.birthdate = birthdate;
@@ -14,6 +14,7 @@ export class UserService {
             userToAdd.report_count = report_count;
             userToAdd.follower_count = follower_count;
             userToAdd.following_count = following_count;
+            userToAdd.isBanned = isBanned;
 
             try{
                 await AppDataSource.manager.save(userToAdd);
@@ -25,11 +26,11 @@ export class UserService {
         }
 
 
-    static async getAllUsers(): Promise<user[]>{
+    static async getAllUsers(): Promise<users[]>{
         
             try {
-                const users = await AppDataSource.manager.find(user); // Tüm kullanıcıları veritabanından alın
-                return users;
+                const userses = await AppDataSource.manager.find(users); // Tüm kullanıcıları veritabanından alın
+                return userses;
             } catch (error) {
                 throw error;
             }
@@ -39,7 +40,7 @@ export class UserService {
     static async getUserById(userId: number) {
         try {
             // Veritabanında belirli bir kullanıcıyı ID'ye göre al
-            const userRepository = AppDataSource.manager.getRepository(user);
+            const userRepository = AppDataSource.manager.getRepository(users);
             const foundUser = await userRepository.findOneBy({
                 user_id:userId
             })             
@@ -52,7 +53,7 @@ export class UserService {
 
     static async getUserByUsername(username: string){
         try{
-            const userRepository = AppDataSource.manager.getRepository(user);
+            const userRepository = AppDataSource.manager.getRepository(users);
             const foundUser = await userRepository.findOneBy({
                 username:username
             })
@@ -63,9 +64,9 @@ export class UserService {
         }
     }
 
-    static async getUsersWithReportCount(): Promise<user[]> {
+    static async getUsersWithReportCount(): Promise<users[]> {
         try {
-          const userRepository = AppDataSource.manager.getRepository(user);
+          const userRepository = AppDataSource.manager.getRepository(users);
           const foundUsers = await userRepository.find({
             where: {
               report_count: MoreThan(0)
