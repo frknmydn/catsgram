@@ -30,4 +30,46 @@ export class PetsController {
       res.status(500).json({ error: 'Pet oluşturulamıyor.' });
     }
   }
+
+  async getPetByID(req:Request, res:Response){
+    const foundPet = await this.petsService.getPetById(req.body.pet_id);
+    res.status(201).json(foundPet);
+  }
+
+  async getPetByName(req:Request, res:Response){
+    const foundPet = await this.petsService.getPetByPetName(req.body.name);
+    res.status(201).json(foundPet);
+  }
+
+  async updatePet(req: Request, res: Response) {
+    try {
+      const petId = req.params.petId; 
+      const updatedData: Partial<pets> = req.body;
+      const updatedPet = await this.petsService.updatePet(parseInt(petId), updatedData);
+
+      if (!updatedPet) {
+        res.status(404).json({ error: 'Pet bulunamadı.' });
+      } else {
+        res.status(200).json(updatedPet);
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Pet güncellenemiyor.' });
+    }
+  }
+
+  async deletePet(req: Request, res: Response) {
+    try {
+      const petId = req.params.petId; // Varsayılan olarak bu petin kimliği URL'den alınır.
+      await this.petsService.deletePet(parseInt(petId));
+      res.status(204).end();
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Pet silinemedi.' });
+    }
+  }
+
+  
+
+  
 }

@@ -31,10 +31,12 @@ export class ReportService {
     report.moderator_user_id = moderatorUserId;
     report.approved_at = approved_at;
 
-    // Veritabanına kaydetmek için TypeORM kullanın
+    
 
     try {
       await AppDataSource.manager.save(report);
+
+      //todo: buraya rabbitmq ile notificaiton service'e notification gitmesi lazım moderator ve adminlere bir kullanıcının reportlandığına dair
       return report;
     } catch (error) {
       throw error;
@@ -50,27 +52,27 @@ export class ReportService {
       const reportRepository =
         AppDataSource.manager.getRepository(profile_report);
 
+        //todo: kullanıcıya reportCount ekle
+        //todo: kullanıcıya report edildiğine dair bilgilendirme mesajı gönder
+
       const report = await reportRepository.findOneBy({
         id: reportId,
       });
 
       if (!report) {
-        // Belirtilen rapor bulunamazsa null döndürün veya hata işleyin
+        // Belirtilen rapor bulunamazsa null döndür
         return null;
       }
-
-
-      
 
       // Raporu onaylayın
       report.is_approved = true;
       report.moderator_user_id = moderatorUserId
       report.approved_at = new Date();
 
-      // Veritabanında güncellemeyi kaydetmek için TypeORM kullanın
+      
       await reportRepository.save(report);
 
-      // Güncellenmiş raporu döndürün
+      // Güncellenmiş rapor
       return report;
     } catch (error) {
       throw error;
