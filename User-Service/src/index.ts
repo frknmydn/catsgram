@@ -4,6 +4,7 @@ import express, { Request, Response } from 'express';
 import profileRoute from './routes/profile.route'
 import reportRoute from './routes/report.route'
 import petsRouter from './routes/pets.route'
+import followRouter from './routes/follow.route'
 
 const app = express();
 const PORT = 3001;
@@ -20,6 +21,7 @@ AppDataSource.initialize().then(async () => {
 app.use('/api/profile',profileRoute);
 app.use("/api/reports",reportRoute)
 app.use("/api/pets", petsRouter);
+app.use("/api/follow", followRouter);
 
 app.get('/',(req:Request,res:Response) =>{
     res.send('express is working');

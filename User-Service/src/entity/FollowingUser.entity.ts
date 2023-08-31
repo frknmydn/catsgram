@@ -4,11 +4,14 @@ import { users } from './User.entity';
 @Entity()
 export class followings {
   @PrimaryGeneratedColumn()
-  following_id!: number;
+  id!: number;
 
   @ManyToOne(() => users)
-  user!: users;
+  user_id!: users;
 
   @ManyToOne(() => users)
-  followingUser!: users;
+  followings_user_id!: users;
+
+  @Column({ nullable: true })
+  follow_date!: Date;
 }
