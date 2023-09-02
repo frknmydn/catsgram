@@ -8,7 +8,7 @@ const router = express.Router();
 const followingController = new FollowingController();
 
 router.post('/', followingController.follow.bind(followingController));
-
-router.post('/deneme', followingController.followDeneme.bind(followingController));
+//router.delete('/', followingController.unfollow.bind(followingController));
+//router.get('/followers', followingController.getFollowerId.bind(followingController));
 
 export default router;

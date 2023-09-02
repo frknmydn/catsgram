@@ -1,7 +1,6 @@
 import {Request, Response} from "express";
 import { FollowingService } from "../service/following.service";
-import { followers } from "../entity/FollowerUser.entity";
-import { followings } from "../entity/FollowingUser.entity";
+import { followers } from "../entity/Followings.entity"
 
 
 
@@ -12,11 +11,29 @@ export class FollowingController {
         this.followingService = new FollowingService();
     }
 
+
     async follow(req: Request, res: Response) {
         try {
-            const followData: Partial<followings> = req.body;
-            const followerData: Partial<followers> = req.body;
-            const followed = await this.followingService.follow(followData, followerData);
+            const followerData: Partial<followers> = req.body.followerData;
+            
+            
+            const followed = await this.followingService.follow(followerData);
+            
+            res.status(201).json(followed);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Takip edilemedi.' });
+        }
+    }
+    /*
+
+    async unfollow(req: Request, res: Response) {
+        try {
+            const followerData: Partial<followings> = req.body.followerData;
+            const followedData: Partial<followers> = req.body.followedData;
+            
+            
+            const followed = await this.followingService.unfollow(followerData, followedData);
             
             res.status(201).json(followed);
         } catch (error) {
@@ -25,18 +42,17 @@ export class FollowingController {
         }
     }
 
-    async followDeneme(req: Request, res: Response) {
+    async getFollowerId(req: Request, res: Response) {
         try {
-            const followerData: Partial<followings> = req.body.followerData;
-            const followedData: Partial<followers> = req.body.followedData;
+            const followerData: Partial<followers> = req.body.followerData;
+
+            const followerID = await this.followingService.getFollowerIds(followerData);
+            res.send(followerID);
             
-            
-            const followed = await this.followingService.followDeneme(followerData, followedData);
-            
-            res.status(201).json(followed);
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: 'Takip edilemedi.' });
         }
     }
+    */
 }

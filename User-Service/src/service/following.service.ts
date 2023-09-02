@@ -1,83 +1,142 @@
+import { stringify } from "querystring";
 import { AppDataSource } from "../data-source";
-import { followers } from "../entity/FollowerUser.entity"; // Değiştirilen kısmı düzeltilen entity sınıfının adıyla değiştirin
-import { followings } from "../entity/FollowingUser.entity"; // Değiştirilen kısmı düzeltilen entity sınıfının adıyla değiştirin
 import { users } from "../entity/User.entity"; // Değiştirilen kısmı düzeltilen entity sınıfının adıyla değiştirin
 import { EntityManager, Repository } from "typeorm";
+import { followers } from "../entity/Followings.entity";
 
 export class FollowingService {
-
-
-  async followDeneme(followData: Partial<followings>, followerData: Partial<followers>) {
-
-      const queryRunner = AppDataSource.createQueryRunner();
-      await queryRunner.connect();
-
-      const followerUserID = followData.user_id;
-      const followedUserID = followerData.user_id;
-      
-      console.log("followerUserID: " + followerUserID)
-      await queryRunner.startTransaction();
-      try{
-        //increment value of following_count in users table
-        await queryRunner.manager.increment(users, {user_id: followerUserID}, "following_count", 1);
-        await queryRunner.manager.increment(users, {user_id: followedUserID}, "follower_count", 1);
-
-        //TODO: insert into followings table and followers table and check if user is already followed
-
-        await queryRunner.commitTransaction();
-      }
-      catch(error){
-        await queryRunner.rollbackTransaction();
-        throw error;
-      }
-      finally{
-        await queryRunner.release();
-      }
-    
-    
-    
-
-      
-}
-  
-  async follow(followData: Partial<followings>, followerData: Partial<followers>) {
-    const connection = AppDataSource.manager.connection;
-
-    // Başlatmak için bir transaction oluşturun
-    const queryRunner = connection.createQueryRunner();
+  async follow(followerData: Partial<followers>) {
+    const queryRunner = AppDataSource.createQueryRunner();
     await queryRunner.connect();
+
+    const followerUserID = followerData.follower_user_id;
+    const followingUserID = followerData.following_user_id;
+
+    console.log("followerUserID: " + followerUserID);
+    console.log("followedUserID: " + followingUserID);
     await queryRunner.startTransaction();
-
-    const entityManager: EntityManager = queryRunner.manager;
-
     try {
-      // 1. İlk işlem: following tablosuna kayıt ekle
-      const follow = entityManager.create(followings, followData);
-      await entityManager.save(followings, follow);
+      //check if user already followed
+
+      const areTheyFollowingEachOther = await queryRunner.manager.createQueryBuilder().select("followers")
+      .from(followers,"followers").where("followers.follower_user_id = :followerUserID AND followers.following_user_id = :followingUserID",{followerUserID,followingUserID}).
+      getOne();
+
+
+      console.log(
+        "areTheyFollowingEachOther: " + String(areTheyFollowingEachOther)
+      );
+      //control that if areTheyFollowingEachOther's user_id and followings_user_id are equal to followerUserID and followedUserID
+      if (areTheyFollowingEachOther && areTheyFollowingEachOther.isApproved) {
+        //dont throw error, send message to client
+        return { success: false, message: "User already followed" };
+      }
+
+      if(areTheyFollowingEachOther && !areTheyFollowingEachOther.isApproved){
+        //dont throw error, send message to client
+        return { success: false, message: "User already followed but not approved" };
+      }
+
       
-      // 2. İkinci işlem: follower tablosuna kayıt ekle
-      const follower = entityManager.create(followers, followerData);
-      await entityManager.save(followers, follower);
 
-      // 3. Üçüncü işlem: followingCount'u artır
-      const existingFollowerID = followData.user_id;
-      await entityManager.increment(users, { user_id: existingFollowerID }, 'following_count', 1);
+      //increment value of following_count in users table
+      await queryRunner.manager.increment(
+        users,
+        { user_id: followerUserID },
+        "following_count",
+        1
+      );
 
-      // 4. Dördüncü işlem: followerCount'u artır
-      const existingFollowingID = followerData.user_id;
-      await entityManager.increment(users, { user_id: existingFollowingID }, 'follower_count', 1);
+      await queryRunner.manager.increment(
+        users,
+        { user_id: followerUserID },
+        "follower_count",
+        1
+      );
 
-      // Tüm işlemler başarılıysa, transaction'ı commit et
+      //add date to followdata
+      followerData.follow_date = new Date();
+
+      await queryRunner.manager.save(followers,followerData);
+
+      followerData.follow_date = new Date();
+
       await queryRunner.commitTransaction();
-
-      return { follow, follower };
     } catch (error) {
-      // Hata durumunda transaction'ı geri al
       await queryRunner.rollbackTransaction();
-      throw error; // Hata yeniden fırlatılabilir veya uygun şekilde işlenebilir.
+      throw error;
     } finally {
-      // QueryRunner'ı kapatın
       await queryRunner.release();
     }
   }
+/*
+  async unfollow(
+    followData: Partial<followings>,
+    followerData: Partial<followers>
+  ) {
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+
+    const followerUserID = followData.user_id;
+    const followedUserID = followerData.user_id;
+
+    console.log("followerUserID: " + followerUserID);
+    console.log("followedUserID: " + followedUserID);
+    await queryRunner.startTransaction();
+    try {
+      //check if user already followed
+
+      const areTheyFollowingEachOther = await queryRunner.manager.findOne(
+        followings,
+        {
+          where: {
+            user_id: followerUserID,
+          },
+        }
+      );
+
+      if (areTheyFollowingEachOther) {
+        //dont throw error, send message to client
+        await queryRunner.manager.decrement(
+          users,
+          { user_id: followerUserID },
+          "following_count",
+          1
+        );
+
+        await queryRunner.manager.decrement(
+          users,
+          { user_id: followedUserID },
+          "follower_count",
+          1
+        );
+
+        await queryRunner.manager.delete(followings, followData);
+        await queryRunner.manager.delete(followers, followerData);
+        await queryRunner.commitTransaction();
+        return { success: true, message: "User unfollowed" };
+      } else {
+        return { success: false, message: "User already unfollowed" };
+      }
+
+      //increment value of following_count in users table
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async getFollowerIds(followdata: Partial<followers>) {
+    const followersRepo = AppDataSource.manager.getRepository(followers);
+    const followerIds = await followersRepo.find({
+      select: ["followers_user_id"],
+      where: {
+        user_id: followdata.user_id,
+      },
+    });
+    return followerIds;
+  }
+  */
 }
