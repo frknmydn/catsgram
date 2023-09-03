@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { followers } from './Followings.entity';
 
 @Entity()
 export class users {
@@ -28,4 +29,7 @@ export class users {
 
     @Column({ default: false })
     isBanned: boolean;
+
+  @OneToMany(() => followers, (followers) => followers.follower_user_id)
+  user_followers: followers[];
 }
