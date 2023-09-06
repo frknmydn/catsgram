@@ -11,4 +11,5 @@ export class blocked_users {
 
   @ManyToOne(() => users)
   blockedUser!: users;
+
 }

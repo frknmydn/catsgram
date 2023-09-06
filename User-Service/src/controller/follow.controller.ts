@@ -65,6 +65,62 @@ export class FollowingController {
             res.status(500).json({ error: 'Takip edilemedi.' });
         }
     }
+
+    async getFollowerId(req: Request, res: Response) {
+        try {
+            const userIDofProfile = req.body.followerData.user_id;
+
+            const followerID = await this.followingService.getFollowerIds(userIDofProfile);
+            res.send(followerID);
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Takip edilemedi.' });
+        }
+    }
+
+    async getFollowingId(req: Request, res: Response) {
+        try {
+            const userIDofProfile = req.body.followerData.user_id;
+
+            const followingID = await this.followingService.getFollowingIds(userIDofProfile);
+            res.send(followingID);
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Takip edilemedi.' });
+        }
+    }
+
+    async getMyFollowerProfilesWithPage(req: Request, res: Response) {
+        try {
+            const userIDofProfile = req.body.user_id;
+            console.log(userIDofProfile);
+            const page = req.body.page;
+
+            const followerProfiles = await this.followingService.getMyFollowerProfilesWithPage(userIDofProfile, page);
+            res.send(followerProfiles);
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Takip edilemedi.' });
+        }
+    }
+
+    async getMyFollowingProfilesWithPage(req: Request, res: Response) {
+        try {
+            const userIDofProfile = req.body.user_id;
+            console.log(userIDofProfile);
+            const page = req.body.page;
+
+            const followingProfiles = await this.followingService.getMyFollowingProfilesWithPage(userIDofProfile, page);
+            res.send(followingProfiles);
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Takip edilemedi.' });
+        }
+    }
     /*
 
     async unfollow(req: Request, res: Response) {

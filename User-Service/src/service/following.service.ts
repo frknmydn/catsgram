@@ -171,4 +171,60 @@ export class FollowingService {
       await queryRunner.release();
     }
   }
+
+  async getMyFollowerProfilesWithPage(userID: number, page: number) {
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+  
+    try {
+      const pageSize = 10; // Sayfa başına kaç kullanıcı 
+      const offset = (page - 1) * pageSize; // Sayfa numarasına göre hesaplam
+  
+      const ids = await this.getFollowerIds(userID);
+  
+      const profiles = await queryRunner.manager
+        .createQueryBuilder()
+        .select("users")
+        .from("users", "users")
+        .where("users.user_id IN (:...ids)", { ids })
+        .skip(offset) // Kaydırma ekleyin
+        .take(pageSize) // Sayfa boyutunu belirtin
+        .getMany();
+  
+      return profiles;
+    } catch (error) {
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async getMyFollowingProfilesWithPage(userID: number, page: number) {
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+  
+    try {
+      const pageSize = 10; // Sayfa başına kaç kullanıcı 
+      const offset = (page - 1) * pageSize; // Sayfa numarasına göre hesaplam
+  
+      const ids = await this.getFollowingIds(userID);
+  
+      const profiles = await queryRunner.manager
+        .createQueryBuilder()
+        .select("users")
+        .from("users", "users")
+        .where("users.user_id IN (:...ids)", { ids })
+        .skip(offset) // Kaydırma ekleyin
+        .take(pageSize) // Sayfa boyutunu belirtin
+        .getMany();
+  
+      return profiles;
+    } catch (error) {
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+
 }
