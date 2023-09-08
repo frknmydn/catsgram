@@ -15,6 +15,7 @@ public class PostServiceApplication {
 
 	}
 
+	/*
 	@Bean
 	public CommandLineRunner commandLineRunner(MongoTemplate mongoTemplate) {
 		return args -> {
@@ -26,6 +27,8 @@ public class PostServiceApplication {
 			System.out.println("MongoDB'den okunan veri: " + retrievedDocument);
 		};
 	}
+
+	 */
 
 
 }
