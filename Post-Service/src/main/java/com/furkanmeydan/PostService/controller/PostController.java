@@ -55,8 +55,8 @@ public class PostController {
     }
 
 
-    @PutMapping("/delete/{id}")
-    public void deletePostWithParameter(String id){
+    @PutMapping("/delete2/{id}")
+    public void deletePostWithParameter(@PathVariable String id){
         postService.deletePostWithParameter(id);
     }
 

@@ -1,5 +1,6 @@
 package com.furkanmeydan.PostService.model;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -8,11 +9,11 @@ import java.util.Date;
 @Document(collection = "posts")
 public class Post {
     @Id
-    private String Id;
+    private String id;
     private String title;
     private String content;
     private String userId;
-    private String PetId;
+    private String pet_id;
     private Date createdAt;
     private Date updatedAt;
     private Date deletedAt;
@@ -23,12 +24,29 @@ public class Post {
     private int shareCount;
     private int reportCount;
 
+    public Post(String id, String title, String content, String userId, String pet_id, Date createdAt, Date updatedAt, Date deletedAt, boolean isDeleted, int likeCount, int commentCount, int viewCount, int shareCount, int reportCount) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.userId = userId;
+        this.pet_id = pet_id;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+        this.isDeleted = isDeleted;
+        this.likeCount = likeCount;
+        this.commentCount = commentCount;
+        this.viewCount = viewCount;
+        this.shareCount = shareCount;
+        this.reportCount = reportCount;
+    }
+
     public String getId() {
-        return Id;
+        return id;
     }
 
     public void setId(String id) {
-        Id = id;
+        id = id;
     }
 
     public String getTitle() {
@@ -56,11 +74,11 @@ public class Post {
     }
 
     public String getPetId() {
-        return PetId;
+        return pet_id;
     }
 
     public void setPetId(String petId) {
-        PetId = petId;
+        pet_id = petId;
     }
 
     public Date getCreatedAt() {
