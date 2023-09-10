@@ -77,5 +77,17 @@ export class UserService {
           throw error;
         }
       }
+
+    static async isUserBanned(userId: number): Promise<boolean> {
+        try {
+          const userRepository = AppDataSource.manager.getRepository(users);
+          const foundUser = await userRepository.findOneBy({
+            user_id: userId
+          });
+          return foundUser.isBanned;
+        } catch (error) {
+          throw error;
+        }
+      }
 }
 

@@ -11,12 +11,13 @@ import java.util.Date;
 import java.util.Optional;
 
 public interface PostRepository extends MongoRepository<Post, String> {
-    public ArrayList<Post> findAllByUserId(String userId);
+     ArrayList<Post> findAllByUserId(String userId);
 
-    public Post findAllByCreatedAtAfter(Date date);
+     Post findAllByCreatedAtAfter(Date date);
 
     @Query("{ 'id' : ?0 }")
-    public Optional<Post> findById(String id);
+     Optional<Post> findById(String id);
+
 
 
 }

@@ -5,7 +5,11 @@ import com.furkanmeydan.PostService.repository.PostRepository;
 import org.bson.codecs.ObjectIdGenerator;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,9 +20,38 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
-    public Post createPost(Post post){
-        System.out.println(post);
-        return postRepository.save(post);
+    public Post createPost(Post post) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        String banCheckUrl = "http://localhost:3001/api/profile/isuserbanned/{userId}";
+
+
+        int userId = post.getUserId();
+
+        // HTTP isteği yapın ve yanıtı alın.
+        ResponseEntity<Boolean> response = restTemplate.exchange(
+                banCheckUrl,
+                HttpMethod.GET,
+                null,
+                Boolean.class,
+                userId
+        );
+
+        // Yanıtı kontrol et
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            boolean isBanned = response.getBody();
+
+            if (isBanned) {
+                throw new RuntimeException("Kullanıcı banned.");
+            } else {
+                // Kullanıcı yasaklı değilse post'u kaydedin.
+                System.out.println(post);
+                return postRepository.save(post);
+            }
+        } else {
+            // HTTP isteği başarısız oldu veya yanıt alınamadıysa bir istisna fırlatın veya uygun bir hata işlemesi yapın.
+            throw new RuntimeException("Kullanıcı yasak kontrolü başarısız oldu.");
+        }
     }
 
     public Post getPostById(String id){

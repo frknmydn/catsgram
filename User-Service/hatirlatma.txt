@@ -1,0 +1,4 @@
+user service db olarak postgre kullaniyor fakat postgre docker compose ustunde calisiyor
+bu yuzden hizmetlerde lokalde calisan postgreyi durdurmayi unuyma
+
+postgre 5050 portunda

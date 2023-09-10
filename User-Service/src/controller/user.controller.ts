@@ -35,6 +35,18 @@ import { UserService } from '../service/user.service';
         res.send(users);
 
     }
+
+    static async isUserBanned(req:Request, res:Response){
+        const userId = parseInt(req.params.user_id, 10);
+        if (isNaN(userId)) {
+            // Eğer dönüştürme işlemi başarısızsa hata işle
+            res.status(400).send("Geçersiz kullanıcı ID'si");
+            return;
+          }
+
+          const user = await UserService.isUserBanned(userId);
+            res.send(user);
+    }
 }
 
 export default UserController;

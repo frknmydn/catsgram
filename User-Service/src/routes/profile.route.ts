@@ -25,4 +25,9 @@ router.get(
     UserController.getReportedUsers
 )
 
+router.get(
+    "/isUserBanned/:user_id",
+    UserController.isUserBanned
+)
+
 export default router;

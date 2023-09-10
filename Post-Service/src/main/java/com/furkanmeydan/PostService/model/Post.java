@@ -12,7 +12,7 @@ public class Post {
     private String id;
     private String title;
     private String content;
-    private String userId;
+    private int userId;
     private String pet_id;
     private Date createdAt;
     private Date updatedAt;
@@ -24,7 +24,7 @@ public class Post {
     private int shareCount;
     private int reportCount;
 
-    public Post(String id, String title, String content, String userId, String pet_id, Date createdAt, Date updatedAt, Date deletedAt, boolean isDeleted, int likeCount, int commentCount, int viewCount, int shareCount, int reportCount) {
+    public Post(String id, String title, String content, int userId, String pet_id, Date createdAt, Date updatedAt, Date deletedAt, boolean isDeleted, int likeCount, int commentCount, int viewCount, int shareCount, int reportCount) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -65,11 +65,11 @@ public class Post {
         this.content = content;
     }
 
-    public String getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
