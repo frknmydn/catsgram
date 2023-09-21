@@ -21,37 +21,14 @@ public class PostService {
     private PostRepository postRepository;
 
     public Post createPost(Post post) {
-        RestTemplate restTemplate = new RestTemplate();
-
-        String banCheckUrl = "http://localhost:3001/api/profile/isuserbanned/{userId}";
-
-
         int userId = post.getUserId();
+         boolean isBanned = isUserBanned(userId);
 
-        // HTTP isteği yapın ve yanıtı alın.
-        ResponseEntity<Boolean> response = restTemplate.exchange(
-                banCheckUrl,
-                HttpMethod.GET,
-                null,
-                Boolean.class,
-                userId
-        );
+         if(isBanned){
+             throw new RuntimeException("User is banned");
+         }
 
-        // Yanıtı kontrol et
-        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-            boolean isBanned = response.getBody();
-
-            if (isBanned) {
-                throw new RuntimeException("Kullanıcı banned.");
-            } else {
-                // Kullanıcı yasaklı değilse post'u kaydedin.
-                System.out.println(post);
-                return postRepository.save(post);
-            }
-        } else {
-            // HTTP isteği başarısız oldu veya yanıt alınamadıysa bir istisna fırlatın veya uygun bir hata işlemesi yapın.
-            throw new RuntimeException("Kullanıcı yasak kontrolü başarısız oldu.");
-        }
+        return postRepository.save(post);
     }
 
     public Post getPostById(String id){
@@ -75,7 +52,7 @@ public class PostService {
         }
     }
 
-    public void commentPost(String id){
+    public void commentIncrementPost(String id){
         Optional<Post> postOptional = postRepository.findById(id);
         if (postOptional.isPresent()) {
             Post post = postOptional.get();
@@ -130,15 +107,34 @@ public class PostService {
             System.out.println("Invalid id");
         }
 
-
-
-
-
     }
 
     public ArrayList<Post> getPostsByUserId(String userId){
         return  postRepository.findAllByUserId(userId);
     }
+
+    public boolean isUserBanned(int userId) {
+        // Kullanıcı kimliği
+        RestTemplate restTemplate = new RestTemplate();
+        String banCheckUrl = "http://localhost:3001/api/profile/isuserbanned/{userId}";
+
+        // Kullanıcı yasaklı mı kontrol edin
+        ResponseEntity<Boolean> response = restTemplate.exchange(
+                banCheckUrl,
+                HttpMethod.GET,
+                null,
+                Boolean.class,
+                userId
+        );
+
+        // Yanıtı kontrol et
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            return response.getBody();
+        } else {
+            return false;
+        }
+    }
+
 
     public void getPostsByTime(Date date){
         postRepository.findAllByCreatedAtAfter(date);

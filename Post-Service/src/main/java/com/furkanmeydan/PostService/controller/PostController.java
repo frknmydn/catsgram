@@ -45,7 +45,7 @@ public class PostController {
 
     @PutMapping("/comment/{id}")
     public void commentPost(String id){
-        postService.commentPost(id);
+        postService.commentIncrementPost(id);
     }
 
 
