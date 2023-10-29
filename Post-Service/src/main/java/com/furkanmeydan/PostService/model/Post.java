@@ -24,6 +24,9 @@ public class Post {
     private int shareCount;
     private int reportCount;
 
+    public Post(){
+
+    }
     public Post(String id, String title, String content, int userId, String pet_id, Date createdAt, Date updatedAt, Date deletedAt, boolean isDeleted, int likeCount, int commentCount, int viewCount, int shareCount, int reportCount) {
         this.id = id;
         this.title = title;

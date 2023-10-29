@@ -2,8 +2,6 @@ package com.furkanmeydan.PostService.service;
 
 import com.furkanmeydan.PostService.model.Post;
 import com.furkanmeydan.PostService.repository.PostRepository;
-import org.bson.codecs.ObjectIdGenerator;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -20,14 +18,19 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
+
     public Post createPost(Post post) {
         int userId = post.getUserId();
+        /*
          boolean isBanned = isUserBanned(userId);
 
          if(isBanned){
              throw new RuntimeException("User is banned");
          }
-
+*/
         return postRepository.save(post);
     }
 

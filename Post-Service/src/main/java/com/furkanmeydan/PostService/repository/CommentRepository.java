@@ -8,4 +8,6 @@ import java.util.ArrayList;
 public interface CommentRepository extends MongoRepository<Comment, String> {
 
     ArrayList<Comment> findByPostId(String postId);
+
+
 }

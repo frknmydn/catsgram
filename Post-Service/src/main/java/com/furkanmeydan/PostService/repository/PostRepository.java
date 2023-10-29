@@ -18,6 +18,8 @@ public interface PostRepository extends MongoRepository<Post, String> {
     @Query("{ 'id' : ?0 }")
      Optional<Post> findById(String id);
 
+    Post save(Post post);
+
 
 
 }
